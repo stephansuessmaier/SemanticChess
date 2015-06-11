@@ -1,0 +1,5 @@
+PREFIX prop: <http://examplecom/prop/>
+PREFIX res: <http://example.com/res/>
+SELECT ?x WHERE {
+	?x prop:black "Magnus Carlsen".
+}

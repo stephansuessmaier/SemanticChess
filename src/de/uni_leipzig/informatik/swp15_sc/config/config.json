@@ -1,0 +1,7 @@
+{ "serverPort":8080,
+  "useVirtuoso":true,
+  "setJdbcUri":false,
+  "graphName":"http://localhost:8890/metagraph",
+  "lexiconFile":"/home/stephan/lexicon.json",
+  "wordnetDatabaseDir":"/path/to/dir"
+}
