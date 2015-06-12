@@ -35,7 +35,7 @@ public class TemplateFactory {
 	}
 
 	public JSONObject generate() {
-		for (JSONObject fragment: fragments) {
+		for (JSONObject fragment : fragments) {
 			try {
 				System.out.println("[DEBUG] TemplateFactory: " + TemplateUtils.makePretty(fragment));
 			} catch (Exception e) {
@@ -51,6 +51,7 @@ public class TemplateFactory {
 		 */
 		String skel = merge();
 		// LinkedList<JSONObject> result = fillBlanks(skel);
+		this.clear();
 		return new JSONObject(skel);
 	}
 
@@ -60,7 +61,7 @@ public class TemplateFactory {
 	 * @return query template
 	 */
 	private String merge() {
-//		String a = "{}";
+		// String a = "{}";
 		JSONObject result = new JSONObject();
 
 		// initialize result as empty template
@@ -75,7 +76,7 @@ public class TemplateFactory {
 		// boolean selectCount = false;
 		boolean setOptions = false;
 
-//		System.out.println("Adding Fragments");
+		// System.out.println("Adding Fragments");
 
 		for (JSONObject fragment : fragments) {
 			try {
@@ -128,8 +129,7 @@ public class TemplateFactory {
 						where_merged.put(merged);
 						where.remove(j);
 						break;
-					}
-					else if (j+1 == where.length()) {
+					} else if (j + 1 == where.length()) {
 						// if loop ends and nothing can be merged to where[i],
 						// add where[i] to where_merged
 						where_merged.put(where.getJSONObject(i));
@@ -139,29 +139,10 @@ public class TemplateFactory {
 			where = where_merged;
 		}
 
-		// add triples to result
-		if (where.length() == 0) {
-			JSONArray and = new JSONArray();
-			JSONObject rel = new JSONObject();
-			rel.put("type", "AND");
-			rel.put("triples", and);
-			where.put(rel);
-			result.put("where", where);
-		}
-
-		else {
-			result.put("where", where);
-		}
-
-		if (setOptions) {
-			result.put("setOptions", true);
-			result.put("options", options);
-		}
-
 		LinkedList<String> person = new LinkedList<String>();
 		LinkedList<String> eco = new LinkedList<String>();
 		LinkedList<String> location = new LinkedList<String>();
-		for (TaggedWord word: remainingWords) {
+		for (TaggedWord word : remainingWords) {
 			if (word.getNe().equals("LOCATION")) {
 				location.add(word.getWord());
 			}
@@ -178,7 +159,7 @@ public class TemplateFactory {
 				} else {
 					person.add(remainingWord.getWord());
 				}
-//				person.add(remainingWord.getWord());
+				// person.add(remainingWord.getWord());
 
 			}
 			if (remainingWord.getNe().equals("ECO")) {
@@ -194,7 +175,7 @@ public class TemplateFactory {
 			 */
 		}
 
-//		 System.out.println("Groeße von eco " + eco.size());
+		// System.out.println("Groeße von eco " + eco.size());
 
 		// Eco einfügen
 		JSONObject empty_triple = new JSONObject();
@@ -214,71 +195,95 @@ public class TemplateFactory {
 
 		// System.out.println("Adding Eco");
 
-		if (eco.size() >= 1) {
+		if (eco.size() == 1) {
 			JSONObject triple_temp = new JSONObject(empty_triple.toString());
 			triple_temp.getJSONObject("property").put("word", "eco");
-//			System.out.println("test" + eco.peek());
+			// System.out.println("test" + eco.peek());
 			triple_temp.getJSONObject("object").put("word", eco.pop());
-			empty_triple.getJSONObject("object").put("vartype", "const");
-			for (int i = 0; i < result.getJSONArray("where").length(); i++) {
-//				System.out.println("[DEBUG] " + result.getJSONArray("where").length());
-				result.getJSONArray("where").getJSONObject(i).getJSONArray("triples").put(triple_temp);
+			// empty_triple.getJSONObject("object").put("vartype", "const");
+			triple_temp.getJSONObject("object").put("vartype", "const");
+			for (int i = 0; i < where.length(); i++) {
+				// System.out.println("[DEBUG] " +
+				// result.getJSONArray("where").length());
+				where.getJSONObject(i).getJSONArray("triples").put(triple_temp);
 			}
 		}
 
 		// System.out.println("Adding Person");
 
 		if (person.size() == 1) {
-			JSONObject copyA = new JSONObject(result.getJSONArray("where").getJSONObject(0).toString());
+			JSONObject copyA = new JSONObject(where.getJSONObject(0).toString());
 			JSONObject tripleA = new JSONObject(empty_triple.toString());
 			JSONObject tripleB = new JSONObject(empty_triple.toString());
 			JSONObject copyB;
-			if (result.getJSONArray("where").length() <= 1) {
-				copyB = new JSONObject(result.getJSONArray("where").getJSONObject(0).toString());
+			if (where.length() <= 1) {
+				copyB = new JSONObject(where.getJSONObject(0).toString());
 			} else {
-				copyB = new JSONObject(result.getJSONArray("where").getJSONObject(1).toString());
+				copyB = new JSONObject(where.getJSONObject(1).toString());
 			}
 			tripleA.getJSONObject("property").put("word", "black");
 			tripleA.getJSONObject("object").put("word", person.peek());
 			tripleA.getJSONObject("object").put("vartype", "const");
 			copyA.getJSONArray("triples").put(tripleA);
-			result.getJSONArray("where").put(0, copyA);
+			where.put(0, copyA);
 			tripleB.getJSONObject("property").put("word", "white");
 			tripleB.getJSONObject("object").put("word", person.pop());
 			tripleB.getJSONObject("object").put("vartype", "const");
 			copyB.getJSONArray("triples").put(tripleB);
-			result.getJSONArray("where").put(1, copyB);
+			where.put(1, copyB);
 
 		}
-		
+
 		if (location.size() == 1) {
-			JSONObject copyA = new JSONObject(result.getJSONArray("where").getJSONObject(0).toString());
+			JSONObject copyA = new JSONObject(where.getJSONObject(0).toString());
 			JSONObject tripleA = new JSONObject(empty_triple.toString());
 			JSONObject tripleB = new JSONObject(empty_triple.toString());
 			JSONObject copyB;
-			if (result.getJSONArray("where").length() <= 1) {
-				copyB = new JSONObject(result.getJSONArray("where").getJSONObject(0).toString());
+			if (where.length() <= 1) {
+				copyB = new JSONObject(where.getJSONObject(0).toString());
 			} else {
-				copyB = new JSONObject(result.getJSONArray("where").getJSONObject(1).toString());
+				copyB = new JSONObject(where.getJSONObject(1).toString());
 			}
 			tripleA.getJSONObject("property").put("word", "site");
 			tripleA.getJSONObject("object").put("word", location.peek());
 			tripleA.getJSONObject("object").put("vartype", "const");
 			copyA.getJSONArray("triples").put(tripleA);
-			result.getJSONArray("where").put(0, copyA);
+			where.put(0, copyA);
 			tripleB.getJSONObject("property").put("word", "site");
 			tripleB.getJSONObject("object").put("word", location.pop());
 			tripleB.getJSONObject("object").put("vartype", "const");
 			copyB.getJSONArray("triples").put(tripleB);
-			result.getJSONArray("where").put(1, copyB);
+			where.put(1, copyB);
 
 		}
+
+		eco.clear();
+		person.clear();
+		location.clear();
 
 		// if(person.size() < 2) {
 		// //rotiere mittels Union durch alle möglichen Kombinationen oder tue
 		// nichts.
 		// }
+		// add triples to result
+		if (where.length() == 0) {
+			JSONArray and = new JSONArray();
+			JSONObject rel = new JSONObject();
+			rel.put("type", "AND");
+			rel.put("triples", and);
+			where.put(rel);
+			result.put("where", where);
+		}
 
+		else {
+			result.put("where", where);
+		}
+
+		if (setOptions) {
+			result.put("setOptions", true);
+			result.put("options", options);
+		}
+		
 		return result.toString();
 
 	}
@@ -318,7 +323,7 @@ public class TemplateFactory {
 	public void addWord(TaggedWord word) {
 		remainingWords.add(word);
 	}
-	
+
 	/**
 	 * Tests if the two given relations should be merged.
 	 * 
@@ -357,9 +362,9 @@ public class TemplateFactory {
 	 * @param relB
 	 */
 	private JSONObject mergeRels(JSONObject relA, JSONObject relB) {
-//		System.out.println("[DEBUGINFO] merging:");
-//		System.out.println(relA);
-//		System.out.println(relB);
+		// System.out.println("[DEBUGINFO] merging:");
+		// System.out.println(relA);
+		// System.out.println(relB);
 		JSONObject result = new JSONObject(relA.toString());
 		JSONArray result_arr = new JSONArray(relA.getJSONArray("triples").toString());
 		try {
@@ -371,8 +376,8 @@ public class TemplateFactory {
 		} catch (JSONException e) {
 			System.err.println("[ERROR] in TemplateFactory: mergeRels(..): " + e);
 		}
-//		System.out.println("[DEBUGINFO] merge result:");
-//		System.out.println(result);
+		// System.out.println("[DEBUGINFO] merge result:");
+		// System.out.println(result);
 		return result;
 	}
 
