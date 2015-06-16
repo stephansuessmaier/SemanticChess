@@ -35,13 +35,6 @@ public class TemplateFactory {
 	}
 
 	public JSONObject generate() {
-		for (JSONObject fragment : fragments) {
-			try {
-				System.out.println("[DEBUG] TemplateFactory: " + TemplateUtils.makePretty(fragment));
-			} catch (Exception e) {
-				System.err.println(e);
-			}
-		}
 		/*
 		 * Idea: 1. merge the fragments from the fragments list into one
 		 * template with blanks (variables that need to be replaced) 2. fill the
@@ -151,8 +144,9 @@ public class TemplateFactory {
 		for (TaggedWord remainingWord : remainingWords) {
 			if (remainingWord.getNe().equals("PERSON")) {
 				// Füge den Namen zur Liste hinzu
-				if ((remainingWords.get(remainingWords.indexOf(remainingWord) - 1).getPos().equals("NN") || remainingWords
-						.get(remainingWords.indexOf(remainingWord) - 1).getPos().equals("NNP"))
+				if (remainingWords.indexOf(remainingWord) > 0
+						&& (remainingWords.get(remainingWords.indexOf(remainingWord) - 1).getPos().equals("NN") || remainingWords
+								.get(remainingWords.indexOf(remainingWord) - 1).getPos().equals("NNP"))
 						&& remainingWords.get(remainingWords.indexOf(remainingWord) - 1).getWord().length() == 1) {
 					person.add(remainingWords.get(remainingWords.indexOf(remainingWord) - 1).getWord() + " "
 							+ remainingWord.getWord());
@@ -212,7 +206,8 @@ public class TemplateFactory {
 		// System.out.println("Adding Person");
 
 		if (person.size() == 1) {
-//			JSONObject copyA = new JSONObject(where.getJSONObject(0).toString());
+			// JSONObject copyA = new
+			// JSONObject(where.getJSONObject(0).toString());
 			JSONObject tripleA = new JSONObject(empty_triple.toString());
 			JSONObject tripleB = new JSONObject(empty_triple.toString());
 			JSONObject copyA;

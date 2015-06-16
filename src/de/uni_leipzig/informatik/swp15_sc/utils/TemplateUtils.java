@@ -47,7 +47,6 @@ public class TemplateUtils {
 		boolean union = false;
 		if (where.length() > 1)
 			union = true;
-		System.out.println(where);
 
 		for (int j = 0; j < where.length(); j++) {
 			if (union) {

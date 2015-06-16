@@ -144,7 +144,7 @@ public class QueryGenerator {
 		}
 
 
-		System.out.println(querySelectClause + queryWhereClause + queryOrderByClause);
+//		System.out.println(querySelectClause + queryWhereClause + queryOrderByClause);
 
 		return (querySelectClause + queryWhereClause + queryOrderByClause);
 	}

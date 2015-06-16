@@ -79,7 +79,7 @@ public class NLPModule {
 		JSONObject template = parser.parseQuestion(sentence);
 		try {
 			generated_template = TemplateUtils.makePretty(template);
-			System.out.println(TemplateUtils.makePretty(template));
+			System.out.println("[INFO] " + generated_template);
 		} catch (Exception e) {
 			System.err.println(e);
 		}
