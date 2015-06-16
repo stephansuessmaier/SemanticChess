@@ -212,13 +212,21 @@ public class TemplateFactory {
 		// System.out.println("Adding Person");
 
 		if (person.size() == 1) {
-			JSONObject copyA = new JSONObject(where.getJSONObject(0).toString());
+//			JSONObject copyA = new JSONObject(where.getJSONObject(0).toString());
 			JSONObject tripleA = new JSONObject(empty_triple.toString());
 			JSONObject tripleB = new JSONObject(empty_triple.toString());
+			JSONObject copyA;
 			JSONObject copyB;
-			if (where.length() <= 1) {
+			if (where.length() == 0) {
+				copyA = new JSONObject();
+				copyA.put("triples", new JSONArray());
+				copyB = new JSONObject();
+				copyB.put("triples", new JSONArray());
+			} else if (where.length() <= 1) {
+				copyA = new JSONObject(where.getJSONObject(0).toString());
 				copyB = new JSONObject(where.getJSONObject(0).toString());
 			} else {
+				copyA = new JSONObject(where.getJSONObject(0).toString());
 				copyB = new JSONObject(where.getJSONObject(1).toString());
 			}
 			tripleA.getJSONObject("property").put("word", "black");
@@ -231,7 +239,6 @@ public class TemplateFactory {
 			tripleB.getJSONObject("object").put("vartype", "const");
 			copyB.getJSONArray("triples").put(tripleB);
 			where.put(1, copyB);
-
 		}
 
 		if (location.size() == 1) {
@@ -283,7 +290,7 @@ public class TemplateFactory {
 			result.put("setOptions", true);
 			result.put("options", options);
 		}
-		
+
 		return result.toString();
 
 	}
